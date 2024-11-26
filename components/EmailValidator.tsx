@@ -31,11 +31,15 @@ export function EmailValidator({
         { emailColumnIndex }
       );
       setSuccess("File emails have been validated successfully!");
-    } catch (error: any) {
-      setError(
-        error.response?.data?.message ||
-          "An error occurred while validating emails"
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(
+          error.response?.data?.message ||
+            "An error occurred while validating emails"
+        );
+      } else {
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }

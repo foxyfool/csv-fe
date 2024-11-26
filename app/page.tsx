@@ -32,7 +32,6 @@ export default function Home() {
   const [success, setSuccess] = useState<string>("");
   const [processedFilename, setProcessedFilename] = useState<string>("");
   const [showValidator, setShowValidator] = useState<boolean>(false);
-  const [validatorKey, setValidatorKey] = useState<number>(0);
 
   const handleFileSelect = (selectedFile: File) => {
     if (!selectedFile.name.toLowerCase().endsWith(".csv")) {
@@ -55,24 +54,6 @@ export default function Home() {
       return false;
     }
     return true;
-  };
-
-  const handleEmailColumnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setEmailColumnIndex(value);
-    if (value && !validateEmailColumnIndex(value)) {
-      return;
-    }
-    setError("");
-  };
-
-  const startEmailValidation = (filename: string, columnIndex: string) => {
-    if (!validateEmailColumnIndex(columnIndex)) return;
-
-    setProcessedFilename(filename);
-    setEmailColumnIndex(columnIndex);
-    setValidatorKey((prev) => prev + 1);
-    setShowValidator(true);
   };
 
   const handlePreview = async () => {
@@ -100,11 +81,15 @@ export default function Home() {
         formData
       );
       setPreviewStats(response.data.stats);
-    } catch (error: any) {
-      setError(
-        error.response?.data?.message ||
-          "Failed to preview file. Please try again."
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(
+          error.response?.data?.message ||
+            "Failed to preview file. Please try again."
+        );
+      } else {
+        setError("An unexpected error occurred.");
+      }
       setPreviewStats(null);
     } finally {
       setLoading(false);
@@ -139,11 +124,15 @@ export default function Home() {
       setSuccess("File processed successfully!");
       setProcessedFilename(response.data.filename);
       setShowValidator(true);
-    } catch (error: any) {
-      setError(
-        error.response?.data?.message ||
-          "Failed to process file. Please try again."
-      );
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(
+          error.response?.data?.message ||
+            "Failed to preview file. Please try again."
+        );
+      } else {
+        setError("An unexpected error occurred.");
+      }
       setShowValidator(false);
     } finally {
       setLoading(false);
