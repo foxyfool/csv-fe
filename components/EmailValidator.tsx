@@ -26,11 +26,18 @@ export function EmailValidator({
     setSuccess("");
 
     try {
-      await axios.post(
+      const response = await axios.post(
         `https://csv-api-xnlp.onrender.com/email-validator/validate/${filename}`,
         { emailColumnIndex }
       );
-      setSuccess("File emails have been validated successfully!");
+
+      if (response.status === 201) {
+        setSuccess(
+          "Email validation started successfully, and the file is being processed."
+        );
+      } else {
+        setSuccess("File emails have been validated successfully!");
+      }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(

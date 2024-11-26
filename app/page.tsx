@@ -80,6 +80,12 @@ export default function Home() {
         "https://csv-api-xnlp.onrender.com/csv-processor/preview",
         formData
       );
+
+      if (response.status === 201) {
+        setSuccess("Preview has been created successfully and is processing.");
+      } else {
+        setSuccess("File previewed successfully!");
+      }
       setPreviewStats(response.data.stats);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -109,6 +115,7 @@ export default function Home() {
 
     setLoading(true);
     setError("");
+    setSuccess("");
     setShowValidator(false);
 
     const formData = new FormData();
@@ -121,14 +128,21 @@ export default function Home() {
         "https://csv-api-xnlp.onrender.com/csv-processor/process",
         formData
       );
-      setSuccess("File processed successfully!");
+
+      if (response.status === 201) {
+        setSuccess(
+          "File processing has started successfully and is in progress."
+        );
+      } else {
+        setSuccess("File processed successfully!");
+      }
       setProcessedFilename(response.data.filename);
       setShowValidator(true);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(
           error.response?.data?.message ||
-            "Failed to preview file. Please try again."
+            "Failed to process file. Please try again."
         );
       } else {
         setError("An unexpected error occurred.");
